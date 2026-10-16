@@ -67,3 +67,36 @@ class Course(BaseModel):
 class ImportResult(BaseModel):
     imported: int
     course_codes: list[str]
+
+
+# ---- Phase 2: student profiles ----
+
+class HistoryRecord(BaseModel):
+    """One past course from a student's transcript."""
+    course_code: str
+    term: str
+    credits_earned: int
+    status: str
+
+
+class PlannedCourse(BaseModel):
+    """One course the student intends to take."""
+    course_code: str
+    term: str
+
+
+class HistoryUpdate(BaseModel):
+    """Body of PUT /history: the complete replacement history."""
+    history: list[HistoryRecord]
+
+
+class PlanRequest(BaseModel):
+    """Body of POST/PUT /plan."""
+    planned_courses: list[PlannedCourse]
+
+
+class StudentProfile(BaseModel):
+    """GET /profile response: exactly these three keys."""
+    student_id: str
+    history: list[HistoryRecord]
+    plan: list[PlannedCourse]
