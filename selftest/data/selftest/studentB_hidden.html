@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<!-- SELFTEST PRACTICE TRANSCRIPT — different instance from grading data.
+     Student C (practice), Algoma University Self-Service, synthetic data.
+     Exercises: history ingest, dedupe (ITEC-1706 23W appears twice),
+     Attempted rows (credits_earned=0), data isolation via distinct course set. -->
+<html lang="en" id="doc">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Advisees - Algoma University Self-Service (Selftest)</title>
+</head>
+<body>
+
+<!--
+  Practice transcript for self-test only.
+  The parser (parse_transcript) looks for tables whose <th> cells include
+  "Status", "Course", and "Credits", then reads td[0]=status, td[1]=course,
+  td[2]=title, td[3]=grade, td[4]=term, td[5]=credits.
+  All course sets here differ from the hidden grading data to prevent hardcoding.
+-->
+
+<!-- ===== Table 1: Intro Courses ===== -->
+<table class="esg-table esg-table--no-mobile">
+  <thead class="esg-table-head">
+    <tr class="esg-table-head__row">
+      <th class="esg-table-head__th"><span>Status</span></th>
+      <th class="esg-table-head__th"><span>Course</span></th>
+      <th class="esg-table-head__th"></th>
+      <th class="esg-table-head__th"><span>Grade</span></th>
+      <th class="esg-table-head__th"><span>Term</span></th>
+      <th class="esg-table-head__th"><span>Credits</span></th>
+    </tr>
+  </thead>
+  <tbody class="esg-table-body">
+    <tr class="esg-table-body__row">
+      <td class="esg-table-body__td"><span class="esg-icon__label" data-bind="text: creditStatusText">Completed</span></td>
+      <td class="esg-table-body__td"><span><a href="#">COSC-1046</a></span></td>
+      <td class="esg-table-body__td word-wrap"><span class="word-wrap" data-bind="text: Title">Intro to Computer Science I</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: VerifiedGrade">81</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Term">23F</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Credit">3</span></td>
+    </tr>
+    <tr class="esg-table-body__row">
+      <td class="esg-table-body__td"><span class="esg-icon__label" data-bind="text: creditStatusText">Completed</span></td>
+      <td class="esg-table-body__td"><span><a href="#">COSC-1047</a></span></td>
+      <td class="esg-table-body__td word-wrap"><span class="word-wrap" data-bind="text: Title">Intro to Computer Science II</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: VerifiedGrade">77</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Term">24W</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Credit">3</span></td>
+    </tr>
+    <tr class="esg-table-body__row">
+      <td class="esg-table-body__td"><span class="esg-icon__label" data-bind="text: creditStatusText">Completed</span></td>
+      <td class="esg-table-body__td"><span><a href="#">MATH-1056</a></span></td>
+      <td class="esg-table-body__td word-wrap"><span class="word-wrap" data-bind="text: Title">Discrete Mathematics I</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: VerifiedGrade">63</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Term">23F</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Credit">3</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ===== Table 2: Core Courses ===== -->
+<table class="esg-table esg-table--no-mobile">
+  <thead class="esg-table-head">
+    <tr class="esg-table-head__row">
+      <th class="esg-table-head__th"><span>Status</span></th>
+      <th class="esg-table-head__th"><span>Course</span></th>
+      <th class="esg-table-head__th"></th>
+      <th class="esg-table-head__th"><span>Grade</span></th>
+      <th class="esg-table-head__th"><span>Term</span></th>
+      <th class="esg-table-head__th"><span>Credits</span></th>
+    </tr>
+  </thead>
+  <tbody class="esg-table-body">
+    <tr class="esg-table-body__row">
+      <td class="esg-table-body__td"><span class="esg-icon__label" data-bind="text: creditStatusText">Completed</span></td>
+      <td class="esg-table-body__td"><span><a href="#">COSC-2006</a></span></td>
+      <td class="esg-table-body__td word-wrap"><span class="word-wrap" data-bind="text: Title">Data Structures I</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: VerifiedGrade">72</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Term">24F</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Credit">3</span></td>
+    </tr>
+    <tr class="esg-table-body__row">
+      <td class="esg-table-body__td"><span class="esg-icon__label" data-bind="text: creditStatusText">Completed</span></td>
+      <td class="esg-table-body__td"><span><a href="#">COSC-2007</a></span></td>
+      <td class="esg-table-body__td word-wrap"><span class="word-wrap" data-bind="text: Title">Data Structures II</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: VerifiedGrade">68</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Term">25W</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Credit">3</span></td>
+    </tr>
+    <tr class="esg-table-body__row">
+      <td class="esg-table-body__td"><span class="esg-icon__label" data-bind="text: creditStatusText">Completed</span></td>
+      <td class="esg-table-body__td"><span><a href="#">MATH-2057</a></span></td>
+      <td class="esg-table-body__td word-wrap"><span class="word-wrap" data-bind="text: Title">Calculus II</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: VerifiedGrade">55</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Term">24W</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Credit">3</span></td>
+    </tr>
+    <tr class="esg-table-body__row">
+      <td class="esg-table-body__td"><span class="esg-icon__label" data-bind="text: creditStatusText">Completed</span></td>
+      <td class="esg-table-body__td"><span><a href="#">COSC-2307</a></span></td>
+      <td class="esg-table-body__td word-wrap"><span class="word-wrap" data-bind="text: Title">Database Programming</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: VerifiedGrade">79</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Term">24F</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Credit">3</span></td>
+    </tr>
+    <tr class="esg-table-body__row">
+      <td class="esg-table-body__td"><span class="esg-icon__label" data-bind="text: creditStatusText">Completed</span></td>
+      <td class="esg-table-body__td"><span><a href="#">COSC-2406</a></span></td>
+      <td class="esg-table-body__td word-wrap"><span class="word-wrap" data-bind="text: Title">Software Engineering I</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: VerifiedGrade">71</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Term">25W</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Credit">3</span></td>
+    </tr>
+    <!-- DEDUPE CASE: ITEC-1706 in term 23W appears twice.
+         First occurrence: grade "D" (letter, rank 1) → should be superseded.
+         Second occurrence (below, in Table 3): grade "72" (numeric, rank 2) → winner.
+         Canonical rule picks higher-ranked grade; deduped result = 1 record with 72/Completed/3. -->
+    <tr class="esg-table-body__row">
+      <td class="esg-table-body__td"><span class="esg-icon__label" data-bind="text: creditStatusText">Completed</span></td>
+      <td class="esg-table-body__td"><span><a href="#">ITEC-1706</a></span></td>
+      <td class="esg-table-body__td word-wrap"><span class="word-wrap" data-bind="text: Title">Web Development I</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: VerifiedGrade">D</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Term">23W</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Credit">3</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ===== Table 3: Electives — contains the winning ITEC-1706 retake row ===== -->
+<table class="esg-table esg-table--no-mobile">
+  <thead class="esg-table-head">
+    <tr class="esg-table-head__row">
+      <th class="esg-table-head__th"><span>Status</span></th>
+      <th class="esg-table-head__th"><span>Course</span></th>
+      <th class="esg-table-head__th"></th>
+      <th class="esg-table-head__th"><span>Grade</span></th>
+      <th class="esg-table-head__th"><span>Term</span></th>
+      <th class="esg-table-head__th"><span>Credits</span></th>
+    </tr>
+  </thead>
+  <tbody class="esg-table-body">
+    <!-- ITEC-1706 23W retake: numeric grade wins over letter grade above -->
+    <tr class="esg-table-body__row">
+      <td class="esg-table-body__td"><span class="esg-icon__label" data-bind="text: creditStatusText">Completed</span></td>
+      <td class="esg-table-body__td"><span><a href="#">ITEC-1706</a></span></td>
+      <td class="esg-table-body__td word-wrap"><span class="word-wrap" data-bind="text: Title">Web Development I</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: VerifiedGrade">72</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Term">23W</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Credit">3</span></td>
+    </tr>
+    <tr class="esg-table-body__row">
+      <td class="esg-table-body__td"><span class="esg-icon__label" data-bind="text: creditStatusText">Completed</span></td>
+      <td class="esg-table-body__td"><span><a href="#">ENGL-1016</a></span></td>
+      <td class="esg-table-body__td word-wrap"><span class="word-wrap" data-bind="text: Title">Academic Writing</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: VerifiedGrade">B+</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Term">23F</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Credit">3</span></td>
+    </tr>
+    <tr class="esg-table-body__row">
+      <td class="esg-table-body__td"><span class="esg-icon__label" data-bind="text: creditStatusText">Completed</span></td>
+      <td class="esg-table-body__td"><span><a href="#">PSYC-1007</a></span></td>
+      <td class="esg-table-body__td word-wrap"><span class="word-wrap" data-bind="text: Title">Intro to Psychology</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: VerifiedGrade">A</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Term">24W</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Credit">3</span></td>
+    </tr>
+    <tr class="esg-table-body__row">
+      <td class="esg-table-body__td"><span class="esg-icon__label" data-bind="text: creditStatusText">Completed</span></td>
+      <td class="esg-table-body__td"><span><a href="#">SOCI-1016</a></span></td>
+      <td class="esg-table-body__td word-wrap"><span class="word-wrap" data-bind="text: Title">Introduction to Sociology</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: VerifiedGrade">66</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Term">24F</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Credit">3</span></td>
+    </tr>
+    <tr class="esg-table-body__row">
+      <td class="esg-table-body__td"><span class="esg-icon__label" data-bind="text: creditStatusText">Completed</span></td>
+      <td class="esg-table-body__td"><span><a href="#">BIOL-1007</a></span></td>
+      <td class="esg-table-body__td word-wrap"><span class="word-wrap" data-bind="text: Title">Biology I</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: VerifiedGrade">58</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Term">25W</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Credit">3</span></td>
+    </tr>
+    <tr class="esg-table-body__row">
+      <td class="esg-table-body__td"><span class="esg-icon__label" data-bind="text: creditStatusText">Completed</span></td>
+      <td class="esg-table-body__td"><span><a href="#">ADMN-1016</a></span></td>
+      <td class="esg-table-body__td word-wrap"><span class="word-wrap" data-bind="text: Title">Intro to Business</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: VerifiedGrade">74</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Term">25F</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Credit">3</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ===== Table 4: In-Progress and Attempted rows ===== -->
+<table class="esg-table esg-table--no-mobile">
+  <thead class="esg-table-head">
+    <tr class="esg-table-head__row">
+      <th class="esg-table-head__th"><span>Status</span></th>
+      <th class="esg-table-head__th"><span>Course</span></th>
+      <th class="esg-table-head__th"></th>
+      <th class="esg-table-head__th"><span>Grade</span></th>
+      <th class="esg-table-head__th"><span>Term</span></th>
+      <th class="esg-table-head__th"><span>Credits</span></th>
+    </tr>
+  </thead>
+  <tbody class="esg-table-body">
+    <tr class="esg-table-body__row">
+      <td class="esg-table-body__td"><span class="esg-icon__label" data-bind="text: creditStatusText">In-Progress</span></td>
+      <td class="esg-table-body__td"><span><a href="#">COSC-3406</a></span></td>
+      <td class="esg-table-body__td word-wrap"><span class="word-wrap" data-bind="text: Title">Operating Systems</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: VerifiedGrade"></span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Term">26SP</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Credit">3</span></td>
+    </tr>
+    <tr class="esg-table-body__row">
+      <td class="esg-table-body__td"><span class="esg-icon__label" data-bind="text: creditStatusText">In-Progress</span></td>
+      <td class="esg-table-body__td"><span><a href="#">COSC-3117</a></span></td>
+      <td class="esg-table-body__td word-wrap"><span class="word-wrap" data-bind="text: Title">Computer Networks</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: VerifiedGrade"></span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Term">26SP</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Credit">3</span></td>
+    </tr>
+    <tr class="esg-table-body__row">
+      <td class="esg-table-body__td"><span class="esg-icon__label" data-bind="text: creditStatusText">Attempted</span></td>
+      <td class="esg-table-body__td"><span><a href="#">COSC-2956</a></span></td>
+      <td class="esg-table-body__td word-wrap"><span class="word-wrap" data-bind="text: Title">Cooperative Education Work Term I</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: VerifiedGrade"></span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Term">25F</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Credit">0</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ===== Table 5: Rows that should be IGNORED (no term → excluded) ===== -->
+<table class="esg-table esg-table--no-mobile">
+  <thead class="esg-table-head">
+    <tr class="esg-table-head__row">
+      <th class="esg-table-head__th"><span>Status</span></th>
+      <th class="esg-table-head__th"><span>Course</span></th>
+      <th class="esg-table-head__th"></th>
+      <th class="esg-table-head__th"><span>Grade</span></th>
+      <th class="esg-table-head__th"><span>Term</span></th>
+      <th class="esg-table-head__th"><span>Credits</span></th>
+    </tr>
+  </thead>
+  <tbody class="esg-table-body">
+    <!-- Empty term: parser must skip this row -->
+    <tr class="esg-table-body__row">
+      <td class="esg-table-body__td"><span class="esg-icon__label" data-bind="text: creditStatusText">Completed</span></td>
+      <td class="esg-table-body__td"><span><a href="#">COSC-9999</a></span></td>
+      <td class="esg-table-body__td word-wrap"><span class="word-wrap" data-bind="text: Title">Placeholder No Term</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: VerifiedGrade">88</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Term"></span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Credit">3</span></td>
+    </tr>
+    <!-- Status not in {Completed, In-Progress, Attempted}: parser must skip -->
+    <tr class="esg-table-body__row">
+      <td class="esg-table-body__td"><span class="esg-icon__label" data-bind="text: creditStatusText">Planned</span></td>
+      <td class="esg-table-body__td"><span><a href="#">COSC-8888</a></span></td>
+      <td class="esg-table-body__td word-wrap"><span class="word-wrap" data-bind="text: Title">Future Course</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: VerifiedGrade"></span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Term">27F</span></td>
+      <td class="esg-table-body__td"><span data-bind="text: Credit">3</span></td>
+    </tr>
+  </tbody>
+</table>
+
+</body>
+</html>
