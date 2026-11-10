@@ -6,9 +6,8 @@ Deployed on Render; an auto-grader on Moodle VPL hits the live URL in `api_url.t
 - **Phase 1** (done): import a course catalog from HTML, look up courses by code.
 - **Phase 2** (done, submitted 2026-10-15, self-test 100/100 locally and live):
   per-student academic profile = transcript history (HTML upload) + course plan (JSON).
-- **Phase 3** (done, merged to `main` via PR #2 on 2026-11-10, live self-test 95/100;
-  the last 5 points are the CI proof files uploaded to VPL): audit engine
-  (`GET /audit-report`) + GitHub Actions CI quality gate.
+- **Phase 3** (done, merged to `main` via PR #2 and submitted on 2026-11-10, VPL score
+  100/100): audit engine (`GET /audit-report`) + GitHub Actions CI quality gate.
 
 Later phases will likely build on these endpoints. Don't change existing routes or
 response shapes unless the new spec asks for it, because graded phases may be re-run.
