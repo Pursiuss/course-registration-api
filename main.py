@@ -5,6 +5,7 @@ from models import (
 )
 from parser import parse_catalog
 from transcript_parser import parse_transcript
+from audit import build_audit_report
 
 app = FastAPI()
 
@@ -122,4 +123,14 @@ async def get_profile(student_id: str):
         student_id=student_id,
         history=student["history"],
         plan=student["plan"],
+    )
+
+
+# ---- Phase 3: audit report ----
+
+@app.get("/api/v1/students/{student_id}/audit-report")
+async def audit_report(student_id: str, strict: bool = False):
+    student = get_student(student_id)
+    return build_audit_report(
+        student_id, student["plan"], student["history"], courses, strict
     )

@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main, phase-3]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality-gate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Lint (flake8)
+        run: flake8
+
+      - name: Tests with coverage (fail under 80%)
+        run: pytest --cov --cov-report=term-missing --cov-fail-under=80
+
+      - name: Integration test (boot the API, run API tests against it)
+        run: |
+          uvicorn main:app --host 127.0.0.1 --port 8000 &
+          for i in $(seq 1 30); do
+            curl -sf http://127.0.0.1:8000/ && break
+            sleep 1
+          done
+          API_URL=http://127.0.0.1:8000 pytest tests/test_api.py -v
