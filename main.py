@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException, Depends
+from fastapi import FastAPI, UploadFile, File, HTTPException, Depends, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from models import (
     Course, ImportResult, normalize_code,
@@ -8,6 +8,8 @@ from parser import parse_catalog
 from transcript_parser import parse_transcript
 from audit import build_audit_report
 from auth import register_user, authenticate, create_token, decode_token
+from rate_limit import SlidingWindowLimiter
+
 
 app = FastAPI()
 
@@ -206,7 +208,31 @@ async def get_profile(student_id: str):
 
 # ---- Phase 3: audit report ----
 
-@app.get("/api/v1/students/{student_id}/audit-report")
+# 10 audit reports per 60 seconds, counted separately for each caller.
+audit_limiter = SlidingWindowLimiter(limit=10, window=60)
+
+
+def rate_limit_audit(
+    request: Request,
+    creds: HTTPAuthorizationCredentials | None = Depends(bearer),
+) -> None:
+    """429 once a caller passes the limit. A caller is the token's user if
+    a valid token is sent, otherwise the client's IP address."""
+    claims = decode_token(creds.credentials) if creds else None
+    if claims:
+        key = f"user:{claims['sub']}"
+    else:
+        key = f"ip:{request.client.host if request.client else 'unknown'}"
+    if not audit_limiter.allow(key):
+        raise HTTPException(
+            status_code=429, detail="Too many requests: limit is 10 per minute"
+        )
+
+
+@app.get(
+    "/api/v1/students/{student_id}/audit-report",
+    dependencies=[Depends(rate_limit_audit)],
+)
 async def audit_report(student_id: str, strict: bool = False):
     student = get_student(student_id)
     return build_audit_report(
