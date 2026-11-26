@@ -65,9 +65,22 @@ def import_catalog(client):
     return client.post("/api/v1/admin/catalog/import", files=files)
 
 
+def auth_headers(client, username):
+    """Register (a 409 because it already exists is fine), log in, and
+    return the Authorization header for that user's token."""
+    creds = {"username": username, "password": "Test-Pass-1"}
+    client.post("/api/v1/auth/register", json=creds)
+    token = client.post("/api/v1/auth/login", json=creds).json()["access_token"]
+    return {"Authorization": f"Bearer {token}"}
+
+
 def import_history(client, sid):
     files = {"file": ("transcript.html", TRANSCRIPT_HTML, "text/html")}
-    return client.post(f"/api/v1/students/{sid}/history/import", files=files)
+    return client.post(
+        f"/api/v1/students/{sid}/history/import",
+        files=files,
+        headers=auth_headers(client, sid),
+    )
 
 
 # ---- Phase 1 + 2 routes (regression) ----
@@ -92,7 +105,8 @@ def test_history_import_and_profile(client):
     assert response.status_code == 201
     assert response.json()["past_courses_imported"] == 3
     client.post(f"/api/v1/students/{sid}/plan", json=PLAN)
-    profile = client.get(f"/api/v1/students/{sid}/profile").json()
+    url = f"/api/v1/students/{sid}/profile"
+    profile = client.get(url, headers=auth_headers(client, sid)).json()
     assert set(profile) == {"student_id", "history", "plan"}
     assert len(profile["plan"]) == 2
 
@@ -108,7 +122,7 @@ def test_history_and_plan_can_be_replaced_and_cleared(client):
     assert client.put(f"{base}/plan", json=PLAN).status_code == 200
     assert client.delete(f"{base}/plan").status_code == 200
     assert client.delete(f"{base}/history").status_code == 200
-    profile = client.get(f"{base}/profile").json()
+    profile = client.get(f"{base}/profile", headers=auth_headers(client, sid)).json()
     assert profile["history"] == [] and profile["plan"] == []
 
 

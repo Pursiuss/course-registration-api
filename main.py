@@ -1,4 +1,5 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException, Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from models import (
     Course, ImportResult, normalize_code,
     HistoryUpdate, PlanRequest, StudentProfile, Credentials,
@@ -6,7 +7,7 @@ from models import (
 from parser import parse_catalog
 from transcript_parser import parse_transcript
 from audit import build_audit_report
-from auth import register_user, authenticate, create_token
+from auth import register_user, authenticate, create_token, decode_token
 
 app = FastAPI()
 
@@ -25,6 +26,45 @@ def get_student(student_id: str) -> dict[str, list]:
     if student is None:
         raise HTTPException(status_code=404, detail=f"Student '{student_id}' not found")
     return student
+
+
+# ---- Phase 4: who is calling? ----
+
+# auto_error=False: a missing header gives us None instead of FastAPI's
+# own error, so every auth failure below is the 401 the spec asks for.
+bearer = HTTPBearer(auto_error=False)
+
+
+def unauthorized(detail: str) -> HTTPException:
+    return HTTPException(
+        status_code=401, detail=detail, headers={"WWW-Authenticate": "Bearer"}
+    )
+
+
+def current_claims(
+    creds: HTTPAuthorizationCredentials | None = Depends(bearer),
+) -> dict:
+    """Claims from a valid Bearer token, or 401 (missing, forged, expired)."""
+    claims = decode_token(creds.credentials) if creds else None
+    if claims is None:
+        raise unauthorized("Missing or invalid token")
+    return claims
+
+
+def require_owner(student_id: str, claims: dict = Depends(current_claims)) -> dict:
+    """BOLA lock: the token's sub must be exactly this student_id."""
+    if claims.get("sub") != student_id:
+        raise unauthorized("Token does not belong to this student")
+    return claims
+
+
+def require_owner_or_admin(
+    student_id: str, claims: dict = Depends(current_claims)
+) -> dict:
+    """RBAC: the student themselves, or anyone whose token says role=admin."""
+    if claims.get("sub") != student_id and claims.get("role") != "admin":
+        raise unauthorized("Not allowed to view this student")
+    return claims
 
 
 @app.get("/")
@@ -81,7 +121,11 @@ async def get_course(course_code: str):
 
 # ---- Phase 2: student history ----
 
-@app.post("/api/v1/students/{student_id}/history/import", status_code=201)
+@app.post(
+    "/api/v1/students/{student_id}/history/import",
+    status_code=201,
+    dependencies=[Depends(require_owner)],
+)
 async def import_history(student_id: str, file: UploadFile = File(...)):
     html_bytes = await file.read()
     history = parse_transcript(html_bytes)
@@ -128,6 +172,15 @@ async def replace_plan(student_id: str, body: PlanRequest):
     }
 
 
+@app.get(
+    "/api/v1/students/{student_id}/plan",
+    dependencies=[Depends(require_owner_or_admin)],
+)
+async def get_plan(student_id: str):
+    student = get_student(student_id)
+    return {"student_id": student_id, "planned_courses": student["plan"]}
+
+
 @app.delete("/api/v1/students/{student_id}/plan")
 async def clear_plan(student_id: str):
     student = get_student(student_id)
@@ -137,7 +190,11 @@ async def clear_plan(student_id: str):
 
 # ---- Phase 2: unified profile ----
 
-@app.get("/api/v1/students/{student_id}/profile", response_model=StudentProfile)
+@app.get(
+    "/api/v1/students/{student_id}/profile",
+    response_model=StudentProfile,
+    dependencies=[Depends(require_owner_or_admin)],
+)
 async def get_profile(student_id: str):
     student = get_student(student_id)
     return StudentProfile(
