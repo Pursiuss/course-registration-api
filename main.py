@@ -1,11 +1,12 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from models import (
     Course, ImportResult, normalize_code,
-    HistoryUpdate, PlanRequest, StudentProfile,
+    HistoryUpdate, PlanRequest, StudentProfile, Credentials,
 )
 from parser import parse_catalog
 from transcript_parser import parse_transcript
 from audit import build_audit_report
+from auth import register_user, authenticate, create_token
 
 app = FastAPI()
 
@@ -29,6 +30,26 @@ def get_student(student_id: str) -> dict[str, list]:
 @app.get("/")
 async def root():
     return {"status": "ok"}
+
+
+# ---- Phase 4: authentication ----
+
+# Plain "def", not "async def": bcrypt is deliberately slow, so FastAPI
+# runs these in a worker thread instead of blocking every other request.
+@app.post("/api/v1/auth/register", status_code=201)
+def register(body: Credentials):
+    if not register_user(body.username, body.password):
+        raise HTTPException(status_code=409, detail="Username already exists")
+    return {"status": "registered"}
+
+
+@app.post("/api/v1/auth/login")
+def login(body: Credentials):
+    user = authenticate(body.username, body.password)
+    if user is None:
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+    token = create_token(body.username, user["role"])
+    return {"access_token": token, "token_type": "bearer"}
 
 
 # ---- Phase 1: course catalog ----
