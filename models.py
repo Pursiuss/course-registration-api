@@ -100,3 +100,11 @@ class StudentProfile(BaseModel):
     student_id: str
     history: list[HistoryRecord]
     plan: list[PlannedCourse]
+
+
+# ---- Phase 4: authentication ----
+
+class Credentials(BaseModel):
+    """Body of POST /auth/register and POST /auth/login."""
+    username: str = Field(min_length=1)
+    password: str = Field(min_length=1)
