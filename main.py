@@ -9,6 +9,7 @@ from transcript_parser import parse_transcript
 from audit import build_audit_report
 from auth import register_user, authenticate, create_token, decode_token
 from rate_limit import SlidingWindowLimiter
+from recommend import build_recommendations
 
 
 app = FastAPI()
@@ -238,3 +239,14 @@ async def audit_report(student_id: str, strict: bool = False):
     return build_audit_report(
         student_id, student["plan"], student["history"], courses, strict
     )
+
+
+# ---- Phase 4: recommendations ----
+
+@app.get(
+    "/api/v1/students/{student_id}/recommendations",
+    dependencies=[Depends(require_owner_or_admin)],
+)
+async def recommendations(student_id: str):
+    student = get_student(student_id)
+    return build_recommendations(student_id, student["history"], courses)
